@@ -1,3 +1,4 @@
+// src/app/api/shoes/route.js
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Shoe from '@/models/Shoe';
@@ -6,25 +7,44 @@ import { uploadToCloudinary } from '@/lib/cloudinary';
 // GET - Fetch all shoes
 export async function GET() {
   try {
-    console.log('Connecting to database...');
-    await dbConnect();
-    console.log('Database connected, fetching shoes...');
+    console.log('=== GET /api/shoes started ===');
+    console.log('Environment check:');
+    console.log('- MONGODB_URI exists:', !!process.env.MONGODB_URI);
+    console.log('- MONGODB_URI value:', process.env.MONGODB_URI?.substring(0, 20) + '...');
     
+    console.log('Attempting database connection...');
+    await dbConnect();
+    console.log('✓ Database connected successfully');
+    
+    console.log('Fetching shoes from database...');
     const shoes = await Shoe.find({}).sort({ createdAt: -1 }).lean();
-    console.log(`Found ${shoes.length} shoes`);
+    console.log(`✓ Found ${shoes.length} shoes`);
     
     return NextResponse.json({ 
       success: true, 
-      data: shoes 
+      data: shoes,
+      count: shoes.length
     }, { 
-      status: 200 
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store',
+      }
     });
   } catch (error) {
-    console.error('GET Error:', error);
+    console.error('=== GET Error Details ===');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Failed to fetch shoes' 
+        error: error.message || 'Failed to fetch shoes',
+        details: {
+          name: error.name,
+          message: error.message,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }
       },
       { status: 500 }
     );
@@ -34,12 +54,14 @@ export async function GET() {
 // POST - Add new shoe
 export async function POST(request) {
   try {
-    console.log('Starting POST request...');
+    console.log('=== POST /api/shoes started ===');
+    
+    console.log('Connecting to database...');
     await dbConnect();
-    console.log('Database connected');
+    console.log('✓ Database connected');
 
+    console.log('Parsing form data...');
     const formData = await request.formData();
-    console.log('Form data received');
     
     // Extract fields
     const name = formData.get('name');
@@ -49,12 +71,31 @@ export async function POST(request) {
     const stock = parseInt(formData.get('stock'));
     const category = formData.get('category');
     
-    console.log('Extracted fields:', { name, brand, price, discount, stock, category });
+    console.log('Extracted fields:', { 
+      name, 
+      brand, 
+      price, 
+      discount, 
+      stock, 
+      category 
+    });
     
     // Validate required fields
     if (!name || !brand || !price || !stock || !category) {
+      const missingFields = [];
+      if (!name) missingFields.push('name');
+      if (!brand) missingFields.push('brand');
+      if (!price) missingFields.push('price');
+      if (!stock) missingFields.push('stock');
+      if (!category) missingFields.push('category');
+      
+      console.error('Missing required fields:', missingFields);
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { 
+          success: false, 
+          error: 'Missing required fields',
+          missingFields 
+        },
         { status: 400 }
       );
     }
@@ -81,17 +122,18 @@ export async function POST(request) {
           // Upload to Cloudinary
           const uploadedUrl = await uploadToCloudinary(base64Image);
           imageUrls.push(uploadedUrl);
-          console.log(`Image ${i + 1} uploaded successfully`);
+          console.log(`✓ Image ${i + 1} uploaded successfully`);
         } catch (uploadError) {
-          console.error(`Error uploading image ${i + 1}:`, uploadError);
+          console.error(`✗ Error uploading image ${i + 1}:`, uploadError.message);
           // Continue with other images even if one fails
         }
       }
     }
 
-    console.log(`${imageUrls.length} images uploaded successfully`);
+    console.log(`Total images uploaded: ${imageUrls.length}`);
 
     // Create shoe in database
+    console.log('Creating shoe document...');
     const shoe = await Shoe.create({
       name,
       brand,
@@ -102,20 +144,27 @@ export async function POST(request) {
       images: imageUrls,
     });
 
-    console.log('Shoe created successfully:', shoe._id);
+    console.log('✓ Shoe created successfully:', shoe._id);
 
     return NextResponse.json(
       { success: true, data: shoe },
       { status: 201 }
     );
   } catch (error) {
-    console.error('POST Error:', error);
+    console.error('=== POST Error Details ===');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
     console.error('Error stack:', error.stack);
+    
     return NextResponse.json(
       { 
         success: false, 
         error: error.message || 'Failed to add shoe',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        details: {
+          name: error.name,
+          message: error.message,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }
       },
       { status: 500 }
     );
