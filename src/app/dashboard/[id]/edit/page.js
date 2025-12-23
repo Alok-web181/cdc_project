@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use,useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
 const EditShoe = ({ params }) => {
   const router = useRouter();
+  const {id} = use(params)
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -26,12 +27,12 @@ const EditShoe = ({ params }) => {
     }
 
     fetchShoeDetails();
-  }, [params.id, router]);
+  }, [id, router]);
 
   const fetchShoeDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/shoes/${params.id}`);
+      const response = await fetch(`/api/shoes/${id}`);
       const result = await response.json();
 
       if (result.success) {
@@ -74,7 +75,7 @@ const EditShoe = ({ params }) => {
       formDataToSend.append("stock", formData.stock);
       formDataToSend.append("sales", formData.sales);
 
-      const res = await fetch(`/api/shoes/${params.id}`, {
+      const res = await fetch(`/api/shoes/${id}`, {
         method: "PUT",
         body: formDataToSend,
       });
@@ -83,7 +84,7 @@ const EditShoe = ({ params }) => {
 
       if (res.ok) {
         alert("Shoe updated successfully!");
-        router.push(`/dashboard/${params.id}`);
+        router.push(`/dashboard/${id}`);
       } else {
         setError(data.error || "Failed to update shoe");
       }
@@ -104,7 +105,7 @@ const EditShoe = ({ params }) => {
     setError("");
 
     try {
-      const res = await fetch(`/api/shoes/${params.id}`, {
+      const res = await fetch(`/api/shoes/${id}`, {
         method: "DELETE",
       });
 
@@ -141,7 +142,7 @@ const EditShoe = ({ params }) => {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <button
-            onClick={() => router.push(`/dashboard/${params.id}`)}
+            onClick={() => router.push(`/dashboard/${id}`)}
             className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold transition-colors cursor-pointer"
           >
             <ArrowLeft size={20} />

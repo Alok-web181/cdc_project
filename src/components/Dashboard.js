@@ -27,7 +27,7 @@ const Dashboard = () => {
   const totalSalesChartInstance = useRef(null);
 
   // Chart type states
-  const [categoryChartType, setCategoryChartType] = useState("radar");
+  const [categoryChartType, setCategoryChartType] = useState("pie");
   const [priceChartType, setPriceChartType] = useState("radar");
   const [discountChartType, setDiscountChartType] = useState("doughnut");
   const [totalSalesChartType, setTotalSalesChartType] = useState("bar");

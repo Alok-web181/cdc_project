@@ -4,10 +4,11 @@ import Shoe from '@/models/Shoe';
 
 // GET - Fetch single shoe by ID
 export async function GET(request, { params }) {
+  const { id } = await params;
   try {
     await dbConnect();
     
-    const shoe = await Shoe.findById(params.id).lean();
+    const shoe = await Shoe.findById(id).lean();
     
     if (!shoe) {
       return NextResponse.json(
@@ -34,13 +35,14 @@ export async function GET(request, { params }) {
 
 // PUT - Update shoe
 export async function PUT(request, { params }) {
+  const { id } = await params;
   try {
     await dbConnect();
     
     const formData = await request.formData();
     
     // Get the current shoe data first
-    const currentShoe = await Shoe.findById(params.id);
+    const currentShoe = await Shoe.findById(id);
     
     if (!currentShoe) {
       return NextResponse.json(
@@ -78,7 +80,7 @@ export async function PUT(request, { params }) {
     }
 
     const shoe = await Shoe.findByIdAndUpdate(
-      params.id,
+      id,
       updateData,
       { new: true, runValidators: true }
     );
@@ -101,10 +103,11 @@ export async function PUT(request, { params }) {
 
 // DELETE - Delete shoe
 export async function DELETE(request, { params }) {
+  const { id } = await params;
   try {
     await dbConnect();
     
-    const shoe = await Shoe.findByIdAndDelete(params.id);
+    const shoe = await Shoe.findByIdAndDelete(id);
 
     if (!shoe) {
       return NextResponse.json(

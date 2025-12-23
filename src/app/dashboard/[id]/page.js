@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use,useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Edit, Package, Tag, TrendingUp, Clock, History } from "lucide-react";
 
 
 const ShoeDetail = ({ params }) => {
   const router = useRouter();
+  const {id} = use(params)
   const [shoe, setShoe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,12 +20,12 @@ const ShoeDetail = ({ params }) => {
     }
 
     fetchShoeDetails();
-  }, [params.id, router]);
+  }, [id, router]);
 
   const fetchShoeDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/shoes/${params.id}`);
+      const response = await fetch(`/api/shoes/${id}`);
       const result = await response.json();
 
       if (result.success) {
@@ -83,7 +84,7 @@ const ShoeDetail = ({ params }) => {
             Back to Dashboard
           </button>
           <button
-            onClick={() => router.push(`/dashboard/${params.id}/edit`)}
+            onClick={() => router.push(`/dashboard/${id}/edit`)}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-semibold cursor-pointer"
           >
             <Edit size={18} />
