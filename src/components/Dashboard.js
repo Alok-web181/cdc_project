@@ -27,8 +27,8 @@ const Dashboard = () => {
   const totalSalesChartInstance = useRef(null);
 
   // Chart type states
-  const [categoryChartType, setCategoryChartType] = useState("bar");
-  const [priceChartType, setPriceChartType] = useState("line");
+  const [categoryChartType, setCategoryChartType] = useState("radar");
+  const [priceChartType, setPriceChartType] = useState("radar");
   const [discountChartType, setDiscountChartType] = useState("doughnut");
   const [totalSalesChartType, setTotalSalesChartType] = useState("bar");
 
@@ -168,7 +168,7 @@ const Dashboard = () => {
     };
 
     shoes.forEach((shoe) => {
-      const price = shoe.price;
+      const price = shoe.price - (shoe.price * shoe.discount) / 100;
       const sales = shoe.sales || 0;
       if (price < 2000) priceRanges["₹0-2000"] += sales;
       else if (price < 4000) priceRanges["₹2000-4000"] += sales;
@@ -649,14 +649,14 @@ const Dashboard = () => {
                 Bar
               </button>
               <button
-                onClick={() => setPriceChartType("line")}
+                onClick={() => setPriceChartType("radar")}
                 className={`px-3 py-1 text-sm rounded ${
-                  priceChartType === "line"
+                  priceChartType === "radar"
                     ? "bg-green-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                Line
+                radar
               </button>
               <button
                 onClick={() => setPriceChartType("pie")}
@@ -697,16 +697,16 @@ const Dashboard = () => {
               >
                 Bar
               </button>
-              {/* <button
-                onClick={() => setDiscountChartType("line")}
+              <button
+                onClick={() => setDiscountChartType("radar")}
                 className={`px-3 py-1 text-sm rounded ${
-                  discountChartType === "line"
+                  discountChartType === "radar"
                     ? "bg-purple-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                Line
-              </button> */}
+                radar
+              </button>
               <button
                 onClick={() => setDiscountChartType("pie")}
                 className={`px-3 py-1 text-sm rounded ${
@@ -746,16 +746,16 @@ const Dashboard = () => {
               >
                 Bar
               </button>
-              {/* <button
-                onClick={() => setTotalSalesChartType("line")}
+              <button
+                onClick={() => setTotalSalesChartType("radar")}
                 className={`px-3 py-1 text-sm rounded ${
-                  totalSalesChartType === "line"
+                  totalSalesChartType === "radar"
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                Line
-              </button> */}
+                radar
+              </button>
               <button
                 onClick={() => setTotalSalesChartType("pie")}
                 className={`px-3 py-1 text-sm rounded ${

@@ -42,6 +42,27 @@ const ShoeSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    salesHistory: {
+      type: [{
+        sales: {
+          type: Number,
+          required: true,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
+        discount: {
+          type: Number,
+          required: true,
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+      }],
+      default: [],
+    },
   },
   {
     timestamps: true,
