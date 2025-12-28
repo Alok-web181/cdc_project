@@ -40,6 +40,9 @@ const Shoecard = ({ shoe }) => {
         <h3 className="text-amber-600 font-semibold text-base truncate">
           {shoe.name}
         </h3>
+        <h4 className=" bg-zinc-600 w-fit text-white text-xs font-semibold px-2 py-1 mb-2 rounded-full truncate">
+          {shoe.category}
+        </h4>
 
         <div className="flex items-center gap-2">
           <span className="text-lg font-bold text-amber-600">
