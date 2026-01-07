@@ -89,8 +89,8 @@ You can set up and access the project by following the steps below.
 🌐 Live Demo
 
     You can also access the deployed application here:
-
-    👉 https://cdc-project-phi.vercel.app/
+    👉  https://cdc-project-9p8fi46a4-alok-pm-5892s-projects.vercel.app/
+  
 
 
 📝 Conclusion
